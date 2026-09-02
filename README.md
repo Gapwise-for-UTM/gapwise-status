@@ -4,101 +4,79 @@
 
 # Gapwise Status
 
-### Know when Gapwise is healthy — and when it is not.
+### Independent service health for the full Gapwise ecosystem.
 
-**The independent public service-status surface for Gapwise applications, APIs, AI services, documentation, and operator-maintained systems.**
+**The public monitoring and incident-communication surface for Gapwise applications, APIs, AI services, data and documentation surfaces, and selected operator-maintained systems.**
 
 [![Live Status](https://img.shields.io/badge/Live_Status-status.gapwise.ca-36C692?style=for-the-badge&logo=vercel&logoColor=white)](https://status.gapwise.ca)
 [![Monitoring](https://img.shields.io/badge/Monitoring-Hourly-36C692?style=for-the-badge)](https://status.gapwise.ca)
-[![Gapwise](https://img.shields.io/badge/Gapwise-gapwise.ca-111111?style=for-the-badge)](https://gapwise.ca)
 
 <sub>Astro · GitHub Actions · Vercel</sub>
 
 <br />
 
-**[Status](https://status.gapwise.ca)** · **[History](https://status.gapwise.ca/history/)** · **[Gapwise](https://gapwise.ca)** · **[Developer docs](https://docs.gapwise.ca)** · **[Gapwise AI](https://ai.gapwise.ca)** · **[Main repository](https://github.com/andrewmuratov/gapwise)**
+**[Status](https://status.gapwise.ca)** · **[History](https://status.gapwise.ca/history/)** · **[Gapwise](https://gapwise.ca)** · **[Data](https://data.gapwise.ca)** · **[AI](https://ai.gapwise.ca)** · **[Docs](https://docs.gapwise.ca)**
 
 </div>
 
 ---
 
-## What this repository is
+## What Gapwise Status is
 
-This repository is the canonical public service-status surface for the Gapwise ecosystem. It is deliberately deployed independently from the main Gapwise app and from the developer documentation so an application or docs deployment problem does not remove the place used to communicate service health.
+Gapwise Status is the independent operational-health surface for **Gapwise**, a multi-surface campus-intelligence ecosystem created and engineered by **Andrew Muratov**.
 
-The canonical production URL is:
+Gapwise spans a student web/PWA product, native mobile client, deterministic public campus API and SDKs, open data/provenance portal, permissioned OAuth/MCP AI integration, developer documentation, and this separately deployed monitoring and incident-communication service.
+
+Andrew's work across the ecosystem spans **full-stack software engineering, cybersecurity and privacy engineering, platform architecture, API and SDK design, data engineering, developer infrastructure, mobile engineering, operations, and permissioned AI integration**.
+
+This repository is deliberately deployed independently from the main app and developer documentation so a failure in those surfaces does not automatically remove the place used to communicate service health.
+
+Canonical production URL:
 
 ```text
 https://status.gapwise.ca
 ```
 
-The status site communicates the latest known state of Gapwise-owned production surfaces and selected operator-maintained services. It is designed for clear current-state communication, incident history, and graceful handling of delayed monitoring data.
-
-It is **not** a contractual SLA, a promise of continuous synthetic monitoring, or evidence that every upstream dependency was available at every point in the past.
+The site communicates the latest known state of Gapwise-owned production surfaces and selected operator-maintained services. It is not a contractual SLA and does not claim continuous third-party synthetic monitoring of every dependency.
 
 ---
 
-## Status model
+## Monitoring model
 
 Gapwise separates automated probes from services that require operator confirmation.
 
-| Group | What is represented |
-| --- | --- |
-| **Core platform** | Main Gapwise web application plus operator-maintained authentication and sync state |
-| **APIs** | Public Gapwise API availability |
-| **Gapwise AI** | Production AI/MCP service health |
-| **Developer services** | Developer documentation plus operator-maintained transactional auth email state |
-
-Automated production probes run approximately hourly. Operator-maintained services preserve explicit human-reported state rather than pretending that a safe external probe can verify behavior that requires a private user session.
-
-When automated monitoring becomes stale, the site changes its presentation to make that uncertainty visible instead of continuing to present an old green result as current.
-
----
-
-## Public routes
-
-| Route | Purpose |
-| --- | --- |
-| `/` | Current service status and latest check freshness |
-| `/history/` | Recorded service-state transitions and incident history |
-| `/_data/current` | Edge-cached current status source |
-| `/_data/history` | Edge-cached incident-history source |
-
-Legacy `/status/` and `/status/history/` paths redirect to the canonical root routes.
-
-The machine-managed source of truth lives in GitHub issue [`#1`](https://github.com/andrewmuratov/gapwise-status/issues/1). Status transitions are recorded as machine-readable issue comments so the site can render history without coupling its public frontend to the docs repository.
-
----
-
-## Monitoring and incident behavior
-
-The hourly workflow probes production surfaces that can be checked safely from outside a private account session. The operator workflow updates services whose real health cannot be established reliably by a public HTTP request alone.
+Automated checks cover safely observable public production surfaces such as the main application, public API, AI service, data portal, and developer documentation. Operator-maintained state is used when real health requires private-session or provider-side evidence that cannot be verified safely through a public HTTP probe alone.
 
 Key behavior:
 
 - automated checks are serialized to avoid competing publishers;
-- operator-reported incidents remain visible even when automated monitoring is delayed;
-- stale automated data is presented as **unknown / monitoring delayed**, not silently green;
-- service transitions are retained for the public history view;
-- current state and history are cached at the Vercel edge with direct GitHub API fallbacks;
-- a failure to load status data is not itself presented as proof that Gapwise is down.
+- stale monitoring data becomes visibly **unknown / monitoring delayed** rather than silently remaining green;
+- operator-reported incidents remain visible when automation is stale;
+- service-state transitions are retained for the public history view;
+- current state and history are cached at the edge with GitHub-backed fallbacks;
+- a failure to load status data is not itself presented as proof that Gapwise is down;
+- external University of Toronto systems and other upstream dependencies remain outside Gapwise's control.
 
-The public status page intentionally describes what is actually measured. University of Toronto systems and other external upstream services remain outside Gapwise's control.
-
----
-
-## Brand
-
-The status surface uses the canonical Gapwise deer geometry with a status-specific green presentation:
-
-- `public/logo-mark-green.svg` — green Gapwise deer mark for the site header and README;
-- `public/favicon.svg` — matching green deer mark for the browser tab.
-
-The geometry is shared with the other Gapwise repositories; only the presentation color changes. Green is reserved here for the status identity and healthy-state visual language.
+Public routes include `/` for current state, `/history/` for recorded transitions/incidents, `/_data/current`, and `/_data/history`.
 
 ---
 
-## Run locally
+## Gapwise ecosystem
+
+| Repository | Role | Primary surface |
+| --- | --- | --- |
+| **[`gapwise`](https://github.com/andrewmuratov/gapwise)** | Core web/PWA, deterministic student/campus engine, public API, OpenAPI, and SDK source | [gapwise.ca](https://gapwise.ca) / [api.gapwise.ca](https://api.gapwise.ca/v1) |
+| **[`gapwise-mobile`](https://github.com/andrewmuratov/gapwise-mobile)** | Native iOS and Android client | Native mobile app |
+| **[`gapwise-ai`](https://github.com/andrewmuratov/gapwise-ai)** | OAuth/MCP layer for explicitly delegated student context and bounded actions | [ai.gapwise.ca](https://ai.gapwise.ca) |
+| **[`gapwise-data`](https://github.com/andrewmuratov/gapwise-data)** | Open campus-data, provenance, schema, validation, and reuse portal | [data.gapwise.ca](https://data.gapwise.ca) |
+| **[`gapwise-docs`](https://github.com/andrewmuratov/gapwise-docs)** | Canonical developer documentation | [docs.gapwise.ca](https://docs.gapwise.ca) |
+| **[`gapwise-status`](https://github.com/andrewmuratov/gapwise-status)** | Independent service-health monitoring and incident communication | [status.gapwise.ca](https://status.gapwise.ca) |
+
+`gapwise-status` owns operational communication, not product semantics. The main `gapwise` repository remains authoritative for deterministic timetable, routing, gap, campus, API, and student-state behavior.
+
+---
+
+## Local development
 
 Requires Node.js 22 or newer.
 
@@ -111,41 +89,10 @@ npm run build
 npm run dev
 ```
 
-Useful commands:
-
-```bash
-npm run check
-npm run build
-npm run preview
-```
-
-The status-publisher scripts can also be syntax-checked independently through the package scripts before workflow changes are shipped.
+`main` is the production status branch and deploys through the dedicated `gapwise-status` Vercel project. `status.gapwise.ca` is independent from the `gapwise` and `gapwise-docs` deployments.
 
 ---
 
-## Gapwise ecosystem
+## Project relationship
 
-The first-party repositories are separate execution and deployment surfaces with one product identity and a deliberate source-of-truth hierarchy:
-
-| Repository | Role | Primary surface |
-| --- | --- | --- |
-| **[`gapwise`](https://github.com/andrewmuratov/gapwise)** | Core web/PWA product, canonical student-state behavior, deterministic UTM campus intelligence, public API, OpenAPI contract, and SDK source | [gapwise.ca](https://gapwise.ca) / [api.gapwise.ca](https://api.gapwise.ca/v1) |
-| **[`gapwise-mobile`](https://github.com/andrewmuratov/gapwise-mobile)** | Native iOS and Android client consuming canonical Gapwise contracts and product semantics | Native mobile app |
-| **[`gapwise-ai`](https://github.com/andrewmuratov/gapwise-ai)** | Permissioned OAuth/MCP layer for explicitly delegated student context and bounded AI actions | [ai.gapwise.ca](https://ai.gapwise.ca/api/mcp) |
-| **[`gapwise-docs`](https://github.com/andrewmuratov/gapwise-docs)** | Canonical public developer documentation | [docs.gapwise.ca](https://docs.gapwise.ca) |
-| **[`gapwise-status`](https://github.com/andrewmuratov/gapwise-status)** | Independent public service-health and incident-communication surface | [status.gapwise.ca](https://status.gapwise.ca) |
-
-`gapwise` remains authoritative for deterministic timetable, routing, campus, API, and primary student-state semantics. The status repository owns only the communication and monitoring state needed to describe the operational health of those surfaces.
-
----
-
-## Deployment
-
-`main` is the production status branch and deploys through the dedicated `gapwise-status` Vercel project.
-
-- `status.gapwise.ca` is attached only to the status project.
-- `docs.gapwise.ca` is deployed independently from `gapwise-docs`.
-- status changes do not require a docs deployment, and docs changes do not redeploy the status site.
-- legacy docs `/status` URLs permanently redirect to this standalone surface.
-
-Keep related status changes grouped and validated so production deployments remain intentional and the incident-communication surface stays dependable.
+Gapwise is an independent project created by Andrew Muratov. It is not an official University of Toronto service and is not affiliated with or endorsed by the University of Toronto.

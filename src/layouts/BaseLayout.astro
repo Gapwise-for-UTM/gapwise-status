@@ -1,0 +1,50 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:type" content="website" />
+    <meta name="color-scheme" content="dark light" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header__inner">
+        <a class="brand" href="/" aria-label="Gapwise Status home">
+          <span class="brand-mark" aria-hidden="true">G</span>
+          <span>Gapwise</span>
+          <span class="brand-divider" aria-hidden="true"></span>
+          <strong>Status</strong>
+        </a>
+        <nav aria-label="Status navigation">
+          <a href="/">Status</a>
+          <a href="/history/">History</a>
+          <a href="https://docs.gapwise.ca">Docs</a>
+        </nav>
+      </div>
+    </header>
+    <main class="page-shell">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <span>Gapwise service status</span>
+      <span class="footer-links"><a href="mailto:support@gapwise.ca">Support</a><a href="mailto:security@gapwise.ca">Security</a></span>
+    </footer>
+  </body>
+</html>

@@ -1,161 +1,30 @@
 ---
 const commentsEndpoint = "/_data/history";
-const commentsFallbackEndpoint =
-  "https://api.github.com/repos/andrewmuratov/gapwise-status/issues/1/comments";
+const commentsFallbackEndpoint = "https://api.github.com/repos/andrewmuratov/gapwise-status/issues/1/comments";
 ---
 
-<section
-  class="gapwise-status-history"
-  data-gapwise-status-history
-  data-comments-endpoint={commentsEndpoint}
-  data-comments-fallback-endpoint={commentsFallbackEndpoint}
-  aria-live="polite"
->
+<section class="gapwise-status-history" data-gapwise-status-history data-comments-endpoint={commentsEndpoint} data-comments-fallback-endpoint={commentsFallbackEndpoint} aria-live="polite">
   <div class="status-history-toolbar">
     <a href="/" class="status-back-link">← Current status</a>
-    <span class="status-hourly-badge">Hourly monitoring</span>
+    <span class="monitor-badge">Recorded transitions</span>
   </div>
-
-  <div class="status-history-list" data-history-list>
-    <div class="status-loading-row">Loading incident history…</div>
+  <div class="status-stat-grid" data-history-stats>
+    <article class="status-stat"><span class="status-stat__label">Incident transitions</span><strong data-history-incidents>—</strong><span class="status-stat__foot">Degraded or outage entries</span></article>
+    <article class="status-stat"><span class="status-stat__label">Recoveries</span><strong data-history-recoveries>—</strong><span class="status-stat__foot">Returns to operational</span></article>
+    <article class="status-stat"><span class="status-stat__label">Services affected</span><strong data-history-services>—</strong><span class="status-stat__foot">Unique recorded services</span></article>
+    <article class="status-stat"><span class="status-stat__label">Recorded changes</span><strong data-history-total>—</strong><span class="status-stat__foot">All machine-readable events</span></article>
   </div>
-
-  <div class="status-disclaimer">
-    History records service state changes. Brief interruptions between hourly checks may not appear,
-    and operator-maintained services are recorded when manually updated.
-  </div>
+  <div class="status-history-list" data-history-list><div class="loading-row">Loading recorded history…</div></div>
+  <div class="status-disclaimer">This is a transition record, not a continuous uptime ledger. Brief interruptions between hourly checks may not appear, operator-maintained services are recorded when manually updated, and Gapwise does not backfill uptime percentages for periods it did not continuously measure.</div>
 </section>
 
 <script is:inline>
-  const EVENT_MARKER_START = "<!-- GAPWISE_STATUS_EVENT_START -->";
-  const EVENT_MARKER_END = "<!-- GAPWISE_STATUS_EVENT_END -->";
-  const HISTORY_PAGE_SIZE = 100;
-  const HISTORY_MAX_PAGES = 20;
-
-  const escapeHtml = (value) =>
-    String(value ?? "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-
-  const extractEvent = (body) => {
-    const start = body.indexOf(EVENT_MARKER_START);
-    const end = body.indexOf(EVENT_MARKER_END);
-    if (start === -1 || end === -1 || end <= start) return null;
-    return JSON.parse(body.slice(start + EVENT_MARKER_START.length, end).trim());
-  };
-
-  const eventTone = (status) => {
-    if (status === "outage") return "outage";
-    if (status === "degraded") return "degraded";
-    if (status === "operational") return "operational";
-    return "unknown";
-  };
-
-  const eventSummary = (event) => {
-    if (event.to === "operational") return `${event.serviceName} recovered`;
-    if (event.to === "degraded") return `${event.serviceName} is experiencing intermittent issues`;
-    if (event.to === "outage") return `${event.serviceName} is unavailable`;
-    return `${event.serviceName} status changed`;
-  };
-
-  const fetchHistoryPage = async (endpoints, page) => {
-    let lastError;
-    for (const endpoint of endpoints.filter(Boolean)) {
-      try {
-        const url = new URL(endpoint, window.location.origin);
-        url.searchParams.set("per_page", String(HISTORY_PAGE_SIZE));
-        url.searchParams.set("page", String(page));
-        const response = await fetch(url, { headers: { Accept: "application/vnd.github+json" } });
-        if (!response.ok) throw new Error(`History source returned ${response.status}`);
-        const batch = await response.json();
-        if (!Array.isArray(batch)) throw new Error("History source returned invalid data");
-        return batch;
-      } catch (error) {
-        lastError = error;
-      }
-    }
-    throw lastError || new Error("No history source is configured");
-  };
-
-  const fetchAllComments = async (endpoints) => {
-    const comments = [];
-    for (let page = 1; page <= HISTORY_MAX_PAGES; page += 1) {
-      const batch = await fetchHistoryPage(endpoints, page);
-      comments.push(...batch);
-      if (batch.length < HISTORY_PAGE_SIZE) return comments;
-    }
-    return comments;
-  };
-
-  document.querySelectorAll("[data-gapwise-status-history]").forEach(async (root) => {
-    const endpoints = [root.dataset.commentsEndpoint, root.dataset.commentsFallbackEndpoint];
-    const list = root.querySelector("[data-history-list]");
-
-    try {
-      const comments = await fetchAllComments(endpoints);
-      const events = comments
-        .map((comment) => {
-          try { return extractEvent(comment.body ?? ""); } catch { return null; }
-        })
-        .filter(Boolean)
-        .sort((a, b) => new Date(b.at).getTime() - new Date(a.at).getTime());
-
-      if (events.length === 0) {
-        list.innerHTML = `
-          <div class="status-history-empty">
-            <span class="status-icon status-icon--operational" aria-hidden="true">✓</span>
-            <div>
-              <h2>No recorded incidents yet</h2>
-              <p>No monitored service has entered a degraded or outage state since status history began.</p>
-            </div>
-          </div>`;
-        return;
-      }
-
-      const monthFormatter = new Intl.DateTimeFormat(undefined, { month: "long", year: "numeric" });
-      const weekdayFormatter = new Intl.DateTimeFormat(undefined, { weekday: "short" });
-      const timeFormatter = new Intl.DateTimeFormat(undefined, { hour: "numeric", minute: "2-digit" });
-      const grouped = new Map();
-
-      for (const event of events) {
-        const date = new Date(event.at);
-        if (Number.isNaN(date.getTime())) continue;
-        const month = monthFormatter.format(date);
-        if (!grouped.has(month)) grouped.set(month, []);
-        grouped.get(month).push({ ...event, date });
-      }
-
-      list.innerHTML = Array.from(grouped.entries()).map(([month, monthEvents]) => `
-        <section class="status-history-month">
-          <h2>${escapeHtml(month)}</h2>
-          <div class="status-history-events">
-            ${monthEvents.map((event) => {
-              const tone = eventTone(event.to);
-              return `
-                <article class="status-history-event status-history-event--${escapeHtml(tone)}">
-                  <div class="status-history-event__date">
-                    <strong>${escapeHtml(String(event.date.getDate()).padStart(2, "0"))}</strong>
-                    <span>${escapeHtml(weekdayFormatter.format(event.date))}</span>
-                  </div>
-                  <div class="status-history-event__bar" aria-hidden="true"></div>
-                  <div class="status-history-event__content">
-                    <h3>${escapeHtml(eventSummary(event))}</h3>
-                    <p>${escapeHtml(event.message || `Status changed from ${event.from} to ${event.to}.`)}</p>
-                  </div>
-                  <time datetime="${escapeHtml(event.at)}">${escapeHtml(timeFormatter.format(event.date))}</time>
-                </article>`;
-            }).join("")}
-          </div>
-        </section>`).join("");
-    } catch (error) {
-      list.innerHTML = `
-        <div class="status-loading-row status-loading-row--error">
-          Incident history could not be loaded right now. The current status page remains available.
-        </div>`;
-      console.error("Gapwise status history:", error);
-    }
-  });
+const A="<!-- GAPWISE_STATUS_EVENT_START -->",B="<!-- GAPWISE_STATUS_EVENT_END -->",SIZE=100,MAX=20;
+const esc=v=>String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+const extract=body=>{const s=body.indexOf(A),e=body.indexOf(B);return s<0||e<=s?null:JSON.parse(body.slice(s+A.length,e).trim())};
+const tone=s=>["outage","degraded","operational"].includes(s)?s:"unknown";
+const summary=e=>e.to==="operational"?`${e.serviceName} recovered`:e.to==="degraded"?`${e.serviceName} entered degraded performance`:e.to==="outage"?`${e.serviceName} became unavailable`:`${e.serviceName} status changed`;
+async function page(endpoints,n){let err;for(const endpoint of endpoints.filter(Boolean)){try{const u=new URL(endpoint,location.origin);u.searchParams.set("per_page",SIZE);u.searchParams.set("page",n);const r=await fetch(u,{headers:{Accept:"application/vnd.github+json"}});if(!r.ok)throw new Error(String(r.status));const x=await r.json();if(!Array.isArray(x))throw new Error("invalid");return x}catch(e){err=e}}throw err}
+async function all(endpoints){const out=[];for(let n=1;n<=MAX;n++){const x=await page(endpoints,n);out.push(...x);if(x.length<SIZE)break}return out}
+document.querySelectorAll("[data-gapwise-status-history]").forEach(async root=>{const list=root.querySelector("[data-history-list]");try{const comments=await all([root.dataset.commentsEndpoint,root.dataset.commentsFallbackEndpoint]);const events=comments.map(c=>{try{return extract(c.body||"")}catch{return null}}).filter(Boolean).map(e=>({...e,date:new Date(e.at)})).filter(e=>!Number.isNaN(e.date.getTime())).sort((a,b)=>b.date-a.date);const incidents=events.filter(e=>["degraded","outage"].includes(e.to)),recoveries=events.filter(e=>e.to==="operational"),services=new Set(events.map(e=>e.serviceName));root.querySelector("[data-history-incidents]").textContent=String(incidents.length);root.querySelector("[data-history-recoveries]").textContent=String(recoveries.length);root.querySelector("[data-history-services]").textContent=String(services.size);root.querySelector("[data-history-total]").textContent=String(events.length);if(!events.length){list.innerHTML='<div class="status-history-empty"><span class="status-icon status-icon--operational">✓</span><div><h2>No recorded incidents yet</h2><p>No monitored service has entered a degraded or outage state since this independent status history began.</p></div></div>';return}const monthFmt=new Intl.DateTimeFormat(undefined,{month:"long",year:"numeric"}),dayFmt=new Intl.DateTimeFormat(undefined,{weekday:"short"}),timeFmt=new Intl.DateTimeFormat(undefined,{hour:"numeric",minute:"2-digit",timeZoneName:"short"}),groups=new Map();for(const e of events){const m=monthFmt.format(e.date);if(!groups.has(m))groups.set(m,[]);groups.get(m).push(e)}list.innerHTML=Array.from(groups.entries()).map(([m,es])=>`<section class="status-history-month"><h2>${esc(m)}</h2><div>${es.map(e=>`<article class="status-history-event status-history-event--${tone(e.to)}"><div class="status-history-event__date"><strong>${String(e.date.getDate()).padStart(2,"0")}</strong><span>${esc(dayFmt.format(e.date))}</span></div><div class="status-history-event__bar"></div><div class="status-history-event__content"><h3>${esc(summary(e))}</h3><p>${esc(e.message||`Status changed from ${e.from||"unknown"} to ${e.to||"unknown"}.`)}</p><p>${esc(e.from||"unknown")} → ${esc(e.to||"unknown")}</p></div><time datetime="${esc(e.at)}">${esc(timeFmt.format(e.date))}</time></article>`).join("")}</div></section>`).join("")}catch(e){list.innerHTML='<div class="loading-row loading-row--error">Incident history could not be loaded right now. The current status page remains available.</div>';console.error("Gapwise status history:",e)}});
 </script>

@@ -1,0 +1,12 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import StatusDashboard from "../components/StatusDashboard.astro";
+---
+<BaseLayout title="Gapwise Status" description="Current operational status and incident information for Gapwise services.">
+  <section class="page-heading">
+    <p class="page-kicker">Service health</p>
+    <h1>Gapwise Status</h1>
+    <p>Current production status for Gapwise applications, APIs, AI services, documentation, and operator-maintained systems.</p>
+  </section>
+  <StatusDashboard />
+</BaseLayout>

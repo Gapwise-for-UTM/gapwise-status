@@ -3,10 +3,57 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import StatusHistory from "../../components/StatusHistory.astro";
 ---
 <BaseLayout title="Gapwise Status History" description="Historical Gapwise service-state transitions and incident records.">
-  <section class="page-heading">
+  <section class="page-heading history-heading">
     <p class="page-kicker">Incident record</p>
     <h1>Status history</h1>
     <p>Recorded service transitions from automated production checks and operator-maintained status updates.</p>
   </section>
   <StatusHistory />
 </BaseLayout>
+
+<style is:global>
+  .history-heading {
+    margin-bottom: 2.35rem;
+  }
+
+  .gapwise-status-history {
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  .gapwise-status-history .status-history-toolbar {
+    margin-bottom: 0.15rem;
+  }
+
+  .gapwise-status-history .status-stat-grid {
+    margin: 0;
+  }
+
+  .gapwise-status-history .status-history-list {
+    margin: 0;
+  }
+
+  .gapwise-status-history .status-history-empty {
+    margin: 0;
+    padding: 1.15rem 1.2rem;
+  }
+
+  .gapwise-status-history .status-disclaimer {
+    margin-top: 0.25rem;
+    padding: 0.9rem 1rem;
+  }
+
+  @media (max-width: 40rem) {
+    .history-heading {
+      margin-bottom: 1.75rem;
+    }
+
+    .gapwise-status-history {
+      gap: 0.75rem;
+    }
+
+    .gapwise-status-history .status-history-toolbar {
+      margin-bottom: 0;
+    }
+  }
+</style>

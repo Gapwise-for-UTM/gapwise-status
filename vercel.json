@@ -1,0 +1,61 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    {
+      "source": "/status",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/status/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/status/history",
+      "destination": "/history/",
+      "permanent": true
+    },
+    {
+      "source": "/status/history/",
+      "destination": "/history/",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/_data/current",
+      "destination": "https://api.github.com/repos/andrewmuratov/gapwise-status/issues/1"
+    },
+    {
+      "source": "/_data/history",
+      "destination": "https://api.github.com/repos/andrewmuratov/gapwise-status/issues/1/comments"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/_data/current",
+      "headers": [
+        { "key": "x-vercel-enable-rewrite-caching", "value": "1" },
+        { "key": "CDN-Cache-Control", "value": "max-age=60, stale-while-revalidate=3600, stale-if-error=86400" },
+        { "key": "Cache-Control", "value": "public, max-age=30" }
+      ]
+    },
+    {
+      "source": "/_data/history",
+      "headers": [
+        { "key": "x-vercel-enable-rewrite-caching", "value": "1" },
+        { "key": "CDN-Cache-Control", "value": "max-age=300, stale-while-revalidate=3600, stale-if-error=86400" },
+        { "key": "Cache-Control", "value": "public, max-age=60" }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" }
+      ]
+    }
+  ]
+}

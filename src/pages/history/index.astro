@@ -1,0 +1,12 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import StatusHistory from "../../components/StatusHistory.astro";
+---
+<BaseLayout title="Gapwise Status History" description="Historical Gapwise service-state transitions and incident records.">
+  <section class="page-heading">
+    <p class="page-kicker">Incident record</p>
+    <h1>Status history</h1>
+    <p>Recorded service transitions from automated production checks and operator-maintained status updates.</p>
+  </section>
+  <StatusHistory />
+</BaseLayout>

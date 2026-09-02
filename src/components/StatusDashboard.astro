@@ -6,27 +6,30 @@ const historyEndpoint = "/_data/history";
 
 <section class="status-product" data-status-product data-status-endpoint={statusIssueEndpoint} data-status-fallback-endpoint={statusIssueFallbackEndpoint} data-history-endpoint={historyEndpoint} aria-live="polite">
   <section class="hero-health hero-health--unknown" data-hero-health>
-    <div class="hero-health__icon" data-summary-icon aria-hidden="true">•</div>
-    <div class="hero-health__copy">
-      <div class="hero-health__eyebrow">Current platform health</div>
-      <h2 data-summary-title>Loading current status…</h2>
-      <p data-summary-message>Fetching the latest production snapshot.</p>
-      <div class="hero-health__meta">
-        <span class="live-dot" data-live-dot aria-hidden="true"></span>
-        <span data-last-updated>Waiting for the latest check</span>
+    <div class="hero-health__topline">
+      <span class="hero-health__signal"><span class="live-dot" data-live-dot aria-hidden="true"></span><span data-monitoring-state>Initializing monitoring</span></span>
+      <button class="refresh-button" type="button" data-refresh-status aria-label="Refresh status data"><span aria-hidden="true">↻</span> Refresh</button>
+    </div>
+    <div class="hero-health__main">
+      <div class="hero-health__icon" data-summary-icon aria-hidden="true">•</div>
+      <div class="hero-health__copy">
+        <div class="hero-health__eyebrow">Current platform health</div>
+        <h2 data-summary-title>Loading current status…</h2>
+        <p data-summary-message>Fetching the latest production snapshot.</p>
       </div>
     </div>
-    <div class="hero-health__stamp">
-      <span>Monitoring</span>
-      <strong data-monitoring-state>Initializing</strong>
+    <div class="hero-health__footer">
+      <span data-last-updated>Waiting for the latest check</span>
+      <span class="hero-health__divider" aria-hidden="true"></span>
+      <span data-next-check>Automatic checks run every 15 minutes</span>
     </div>
   </section>
 
   <section class="status-stat-grid" aria-label="Monitoring overview">
     <article class="status-stat"><span class="status-stat__label">Services tracked</span><strong data-stat-services>—</strong><span class="status-stat__foot">Across production surfaces</span></article>
-    <article class="status-stat"><span class="status-stat__label">Automated probes</span><strong data-stat-automatic>—</strong><span class="status-stat__foot">Approximately hourly</span></article>
-    <article class="status-stat"><span class="status-stat__label">Operator-maintained</span><strong data-stat-manual>—</strong><span class="status-stat__foot">Human-confirmed systems</span></article>
-    <article class="status-stat"><span class="status-stat__label">Recorded incidents</span><strong data-stat-incidents>—</strong><span class="status-stat__foot">Since status history began</span></article>
+    <article class="status-stat"><span class="status-stat__label">Automatic monitors</span><strong data-stat-automatic>—</strong><span class="status-stat__foot">Every 15 minutes</span></article>
+    <article class="status-stat"><span class="status-stat__label">Healthy now</span><strong data-stat-healthy>—</strong><span class="status-stat__foot">Last observed snapshot</span></article>
+    <article class="status-stat"><span class="status-stat__label">Recorded incidents</span><strong data-stat-incidents>—</strong><span class="status-stat__foot">Since history began</span></article>
   </section>
 
   <section class="active-incident" data-active-incident hidden>
@@ -36,94 +39,98 @@ const historyEndpoint = "/_data/history";
 
   <section class="status-panel" aria-labelledby="systems-heading">
     <div class="status-panel__header">
-      <div><p class="section-kicker">Production systems</p><h2 id="systems-heading">Live service health</h2><p>Current state, monitoring method, endpoint detail, and latest confirmation for each first-party surface.</p></div>
-      <span class="monitor-badge" data-hourly-badge>Hourly checks</span>
+      <div><p class="section-kicker">Production systems</p><h2 id="systems-heading">Live service health</h2><p>Current health, monitoring method, last confirmation, and endpoint-level diagnostics for every tracked Gapwise surface.</p></div>
+      <span class="monitor-badge" data-monitor-badge>Live checks</span>
+    </div>
+    <div class="service-toolbar" role="toolbar" aria-label="Filter services">
+      <div class="service-filter" data-service-filter>
+        <button type="button" class="is-active" data-filter="all">All <span data-filter-all>—</span></button>
+        <button type="button" data-filter="automatic">Automatic <span data-filter-automatic>—</span></button>
+        <button type="button" data-filter="manual">Operator <span data-filter-manual>—</span></button>
+        <button type="button" data-filter="issues">Issues <span data-filter-issues>—</span></button>
+      </div>
+      <label class="service-search"><span aria-hidden="true">⌕</span><input type="search" placeholder="Search services" data-service-search aria-label="Search services" /></label>
     </div>
     <div class="status-groups" data-status-groups><div class="loading-row">Loading service health…</div></div>
   </section>
 
-  <section class="status-insight-grid">
-    <article class="insight-card">
-      <div class="insight-card__icon">↻</div>
-      <div><span class="section-kicker">Freshness</span><h3>Monitoring snapshot</h3><p data-snapshot-detail>The latest production snapshot is loading.</p></div>
-    </article>
-    <article class="insight-card">
-      <div class="insight-card__icon">◎</div>
-      <div><span class="section-kicker">Coverage</span><h3>What is actually monitored</h3><p>Public Gapwise surfaces are probed automatically. Authentication/sync and transactional email are operator-maintained because safe anonymous probes cannot fully represent those private workflows.</p></div>
-    </article>
-    <article class="insight-card">
-      <div class="insight-card__icon">◇</div>
-      <div><span class="section-kicker">Interpretation</span><h3>No invented uptime</h3><p>This page reports observed checks and recorded transitions. It does not manufacture 30/90-day percentages from monitoring data that Gapwise did not collect.</p></div>
-    </article>
-    <article class="insight-card">
-      <div class="insight-card__icon">↗</div>
-      <div><span class="section-kicker">Dependencies</span><h3>Upstream boundaries</h3><p>University of Toronto systems and other third-party upstreams remain outside Gapwise control. A healthy Gapwise surface does not guarantee every external dependency is healthy.</p></div>
-    </article>
+  <section class="diagnostic-grid" aria-label="Status diagnostics">
+    <article class="diagnostic-card"><span class="section-kicker">Freshness</span><div class="diagnostic-card__value" data-freshness-value>—</div><p data-snapshot-detail>The latest production snapshot is loading.</p></article>
+    <article class="diagnostic-card"><span class="section-kicker">Automation coverage</span><div class="diagnostic-card__value" data-coverage-value>—</div><p>Public production surfaces are automatically probed. Private workflows remain operator-confirmed until a safe synthetic check exists.</p></article>
+    <article class="diagnostic-card"><span class="section-kicker">Probe cadence</span><div class="diagnostic-card__value">15 min</div><p>Each automatic service receives three attempts per cycle, reducing false alarms from one-off network failures.</p></article>
+  </section>
+
+  <section class="status-panel compact-panel" aria-labelledby="monitoring-heading">
+    <div class="status-panel__header"><div><p class="section-kicker">Observability</p><h2 id="monitoring-heading">How to read this page</h2><p>This page distinguishes measured evidence from operator confirmation instead of presenting invented uptime percentages.</p></div></div>
+    <div class="observability-list">
+      <div><span class="observability-icon">◎</span><div><strong>Automatic probe</strong><p>Public endpoint checked repeatedly from GitHub Actions. HTTP outcome is recorded in the live snapshot.</p></div></div>
+      <div><span class="observability-icon">◇</span><div><strong>Operator-maintained</strong><p>Used where a meaningful check requires authenticated state or a side effect that should not be synthesized continuously.</p></div></div>
+      <div><span class="observability-icon">↗</span><div><strong>Third-party boundaries</strong><p>University of Toronto and other upstream systems can affect user experience while remaining outside Gapwise operational control.</p></div></div>
+    </div>
   </section>
 
   <section class="history-preview">
     <div><p class="section-kicker">Incident record</p><h2>Recorded service history</h2><p data-history-summary>Loading the recorded transition history…</p></div>
-    <a class="primary-link" href="/history/"><span>View full history</span><span aria-hidden="true">→</span></a>
+    <a class="primary-link" href="/history/"><span>Open incident history</span><span aria-hidden="true">→</span></a>
   </section>
 
   <details class="status-methodology">
-    <summary><span>How this status page works</span><span aria-hidden="true">+</span></summary>
+    <summary><span>Monitoring methodology and limitations</span><span aria-hidden="true">+</span></summary>
     <div class="status-methodology__body">
-      <p><strong>Automated checks</strong> run approximately hourly against public production surfaces. A failed probe can move a service to degraded or outage until a later check recovers.</p>
-      <p><strong>Operator-maintained checks</strong> are used when a meaningful test requires private user state or an action that should not be synthesized continuously.</p>
-      <p><strong>Freshness protection</strong> prevents an old green result from being presented as current. If monitoring goes stale, the page says so explicitly.</p>
-      <p>If a user-facing issue persists after a retry, contact <a href="mailto:support@gapwise.ca">support@gapwise.ca</a>. Security issues belong at <a href="mailto:security@gapwise.ca">security@gapwise.ca</a>.</p>
+      <p><strong>Automatic checks</strong> run every 15 minutes against public production surfaces. Each service is attempted three times before the cycle is classified.</p>
+      <p><strong>Freshness protection</strong> prevents an old green result from being shown as current. A snapshot older than 60 minutes is explicitly marked delayed while still showing its last-known service states.</p>
+      <p><strong>History</strong> records observed status transitions. It is not a continuous SLA ledger and does not backfill uptime percentages for periods without continuous measurement.</p>
+      <p>If a user-facing issue persists after a retry, contact <a href="mailto:support@gapwise.ca">support@gapwise.ca</a>. Security reports belong at <a href="mailto:security@gapwise.ca">security@gapwise.ca</a>.</p>
     </div>
   </details>
 </section>
 
 <script is:inline>
-  const START = "<!-- GAPWISE_STATUS_JSON_START -->";
-  const END = "<!-- GAPWISE_STATUS_JSON_END -->";
-  const EVENT_START = "<!-- GAPWISE_STATUS_EVENT_START -->";
-  const EVENT_END = "<!-- GAPWISE_STATUS_EVENT_END -->";
-  const RANK = { operational: 0, unknown: 1, degraded: 2, outage: 3 };
-  const STALE_MS = 2.5 * 60 * 60 * 1000;
-  const esc = (v) => String(v ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
-  const norm = (v) => Object.hasOwn(RANK, v) ? v : "unknown";
-  const label = (s) => ({operational:"Operational",degraded:"Degraded",outage:"Outage",unknown:"Unknown"})[norm(s)];
-  const icon = (s) => ({operational:"✓",degraded:"!",outage:"×",unknown:"?"})[norm(s)];
-  const worst = (items, fallback="operational") => items.reduce((a,x)=>RANK[norm(x.status)]>RANK[a]?norm(x.status):a,fallback);
-  const extract = (body,a,b) => { const s=body.indexOf(a), e=body.indexOf(b); return s<0||e<=s?null:JSON.parse(body.slice(s+a.length,e).trim()); };
-  const dt = (v) => { const d=new Date(v); return Number.isNaN(d.getTime())?null:d; };
-  const formatTime = (v) => { const d=dt(v); return d ? new Intl.DateTimeFormat(undefined,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit",timeZoneName:"short"}).format(d) : "Unavailable"; };
-  const ageText = (v) => { const d=dt(v); if(!d) return "No completed automated check yet"; const m=Math.max(0,Math.round((Date.now()-d.getTime())/60000)); if(m<2)return "Updated just now"; if(m<60)return `Updated ${m} minutes ago`; const h=Math.round(m/60); return `Updated about ${h} hour${h===1?"":"s"} ago`; };
-  const host = (url) => { try { return new URL(url).hostname; } catch { return null; } };
-  async function getJson(url){ const r=await fetch(new URL(url,location.origin),{headers:{Accept:"application/vnd.github+json"}}); if(!r.ok) throw new Error(String(r.status)); return r.json(); }
-  async function getIssue(root){ let err; for(const u of [root.dataset.statusEndpoint,root.dataset.statusFallbackEndpoint].filter(Boolean)){ try{ const x=await getJson(u); if(typeof x?.body!=="string")throw new Error("invalid"); return x; }catch(e){err=e;} } throw err; }
-  async function getHistory(root){ try{ const rows=await getJson(root.dataset.historyEndpoint); return Array.isArray(rows)?rows:[]; }catch{return [];} }
+const START="<!-- GAPWISE_STATUS_JSON_START -->",END="<!-- GAPWISE_STATUS_JSON_END -->",EVENT_START="<!-- GAPWISE_STATUS_EVENT_START -->",EVENT_END="<!-- GAPWISE_STATUS_EVENT_END -->";
+const RANK={operational:0,unknown:1,degraded:2,outage:3},STALE_MS=60*60*1000;
+const esc=v=>String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+const norm=v=>Object.hasOwn(RANK,v)?v:"unknown";
+const label=s=>({operational:"Operational",degraded:"Degraded",outage:"Outage",unknown:"Unknown"})[norm(s)];
+const icon=s=>({operational:"✓",degraded:"!",outage:"×",unknown:"?"})[norm(s)];
+const worst=(items,fallback="operational")=>items.reduce((a,x)=>RANK[norm(x.status)]>RANK[a]?norm(x.status):a,fallback);
+const extract=(body,a,b)=>{const s=body.indexOf(a),e=body.indexOf(b);return s<0||e<=s?null:JSON.parse(body.slice(s+a.length,e).trim())};
+const dt=v=>{const d=new Date(v);return Number.isNaN(d.getTime())?null:d};
+const fmt=v=>{const d=dt(v);return d?new Intl.DateTimeFormat(undefined,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit",timeZoneName:"short"}).format(d):"Unavailable"};
+const age=v=>{const d=dt(v);if(!d)return"No completed automatic check yet";const m=Math.max(0,Math.round((Date.now()-d.getTime())/60000));if(m<2)return"Updated just now";if(m<60)return`Updated ${m} min ago`;const h=Math.round(m/60);return`Updated about ${h}h ago`};
+const host=url=>{try{return new URL(url).hostname}catch{return null}};
+async function getJson(url,bust=false){const u=new URL(url,location.origin);if(bust)u.searchParams.set("_",Date.now());const r=await fetch(u,{cache:bust?"no-store":"default",headers:{Accept:"application/vnd.github+json"}});if(!r.ok)throw new Error(String(r.status));return r.json()}
+async function getIssue(root,bust=false){let err;for(const u of [root.dataset.statusEndpoint,root.dataset.statusFallbackEndpoint].filter(Boolean)){try{const x=await getJson(u,bust);if(typeof x?.body!=="string")throw new Error("invalid");return x}catch(e){err=e}}throw err}
+async function getHistory(root){try{const rows=await getJson(root.dataset.historyEndpoint);return Array.isArray(rows)?rows:[]}catch{return[]}}
 
-  document.querySelectorAll("[data-status-product]").forEach(async (root) => {
-    const hero=root.querySelector("[data-hero-health]"), heroIcon=root.querySelector("[data-summary-icon]"), liveDot=root.querySelector("[data-live-dot]");
-    const title=root.querySelector("[data-summary-title]"), message=root.querySelector("[data-summary-message]"), updated=root.querySelector("[data-last-updated]");
-    const monitorState=root.querySelector("[data-monitoring-state]"), badge=root.querySelector("[data-hourly-badge]"), groups=root.querySelector("[data-status-groups]");
-    const incident=root.querySelector("[data-active-incident]"), incidentLabel=root.querySelector("[data-incident-label]"), incidentTitle=root.querySelector("[data-incident-title]"), incidentMessage=root.querySelector("[data-incident-message]"), incidentMeta=root.querySelector("[data-incident-meta]");
-    try {
-      const issue=await getIssue(root); const data=extract(issue.body,START,END); if(!data?.groups) throw new Error("missing payload");
-      const services=data.groups.flatMap(g=>Array.isArray(g.services)?g.services:[]); const checked=dt(data.generatedAt); const stale=Boolean(checked&&Date.now()-checked.getTime()>STALE_MS);
-      const manualAffected=services.filter(s=>s.monitoring==="manual"&&["degraded","outage"].includes(norm(s.status))); const recorded=norm(data.summary?.status); const presentation=manualAffected.length?worst(manualAffected,"degraded"):(stale?"unknown":recorded);
-      hero.className=`hero-health hero-health--${presentation}`; heroIcon.textContent=icon(presentation); liveDot.className=`live-dot live-dot--${presentation}`;
-      monitorState.textContent=stale?"Delayed":checked?"Active":"Initializing"; badge.textContent=stale?"Monitoring delayed":"Hourly checks"; badge.className=`monitor-badge${stale?" monitor-badge--warning":""}`;
-      if(!checked){ title.textContent="Waiting for the first production check"; message.textContent=data.summary?.message||"The hourly monitor is initializing."; }
-      else if(stale){ title.textContent="Status monitoring is delayed"; message.textContent="The latest automated result is older than expected. Service states below are the last known results."; }
-      else if(presentation==="operational"){ title.textContent="All monitored systems are operational"; message.textContent=data.summary?.message||"All current production probes passed."; }
-      else if(presentation==="degraded"){ title.textContent="Some systems are experiencing issues"; message.textContent=data.summary?.message||"One or more services are degraded."; }
-      else if(presentation==="outage"){ title.textContent="A Gapwise service is currently unavailable"; message.textContent=data.summary?.message||"One or more services are unavailable."; }
-      else { title.textContent="Current status is temporarily unavailable"; message.textContent="The latest health state could not be established confidently."; }
-      updated.textContent=checked?`${ageText(data.generatedAt)} · ${formatTime(data.generatedAt)}`:"No completed check yet";
-      root.querySelector("[data-snapshot-detail]").textContent=checked?`${services.filter(s=>s.monitoring==="automatic").length} automatic services were last probed at ${formatTime(data.generatedAt)}. ${stale?"That snapshot is now older than the expected monitoring window.":"The snapshot is within the expected freshness window."}`:"Automated monitoring has not completed its first production cycle yet.";
-      root.querySelector("[data-stat-services]").textContent=String(services.length); root.querySelector("[data-stat-automatic]").textContent=String(services.filter(s=>s.monitoring==="automatic").length); root.querySelector("[data-stat-manual]").textContent=String(services.filter(s=>s.monitoring==="manual").length);
-      const affected=services.filter(s=>["degraded","outage"].includes(norm(s.status))&&(s.monitoring==="manual"||!stale)); incident.hidden=affected.length===0;
-      if(affected.length){ const w=worst(affected,"degraded"); incident.className=`active-incident active-incident--${w}`; incidentLabel.textContent=w==="outage"?"Active outage":"Active degradation"; incidentTitle.textContent=affected.length===1?`${affected[0].name} is reporting issues`:`${affected.length} services are reporting issues`; incidentMessage.textContent="The current status snapshot contains an active non-operational state. This page will update when the next recorded state changes."; incidentMeta.textContent=`Affected: ${affected.map(s=>s.name).join(", ")}`; }
-      groups.innerHTML=data.groups.map(group=>{ const ss=Array.isArray(group.services)?group.services:[]; const roll=worst(ss); return `<section class="service-group"><div class="service-group__head"><div class="service-group__title"><span class="status-icon status-icon--${roll}">${icon(roll)}</span><div><h3>${esc(group.name)}</h3><span>${ss.length} service${ss.length===1?"":"s"}</span></div></div><div class="service-group__state"><span class="state-dot state-dot--${roll}"></span>${label(roll)}</div></div><div class="service-list">${ss.map(s=>{const state=norm(s.status), domain=host(s.url), mode=s.monitoring==="automatic"?"Automated probe":"Operator-maintained", when=s.monitoring==="automatic"?(stale?"Last known hourly result":"Latest hourly result"):(s.checkedAt?`Operator updated ${formatTime(s.checkedAt)}`:"Operator confirmation time unavailable"); return `<div class="service-row"><div class="service-row__identity"><span class="status-icon status-icon--${state}">${icon(state)}</span><div><strong>${esc(s.name)}</strong><span>${esc(domain||mode)}</span></div></div><div class="service-row__monitor"><span class="monitor-type">${esc(mode)}</span><span>${esc(when)}${s.detail?` · ${esc(s.detail)}`:""}</span></div><div class="service-row__state"><span class="state-dot state-dot--${state}"></span>${label(state)}</div></div>`}).join("")}</div></section>`}).join("");
-      const comments=await getHistory(root); const events=comments.map(c=>{try{return extract(c.body||"",EVENT_START,EVENT_END)}catch{return null}}).filter(Boolean); const incidentEvents=events.filter(e=>["degraded","outage"].includes(e.to)); root.querySelector("[data-stat-incidents]").textContent=String(incidentEvents.length); const hs=root.querySelector("[data-history-summary]"); if(!events.length) hs.textContent="No degraded or outage transitions have been recorded since status history began."; else { const latest=events.map(e=>({...e,date:dt(e.at)})).filter(e=>e.date).sort((a,b)=>b.date-a.date)[0]; hs.textContent=`${incidentEvents.length} recorded incident transition${incidentEvents.length===1?"":"s"}. Latest recorded change: ${latest?.serviceName||"service"} on ${latest?formatTime(latest.at):"an unknown date"}.`; }
-    } catch (error) {
-      hero.className="hero-health hero-health--unknown"; heroIcon.textContent="?"; title.textContent="Live status data is temporarily unavailable"; message.textContent="The status record could not be loaded. This does not by itself mean Gapwise is down."; updated.textContent="Status source unavailable · retry shortly"; monitorState.textContent="Unavailable"; badge.textContent="Status unavailable"; badge.className="monitor-badge monitor-badge--warning"; groups.innerHTML='<div class="loading-row loading-row--error">Could not load the current service record.</div>'; console.error("Gapwise status:",error);
-    }
-  });
+document.querySelectorAll("[data-status-product]").forEach(root=>{
+  let currentServices=[];
+  const hero=root.querySelector("[data-hero-health]"),heroIcon=root.querySelector("[data-summary-icon]"),liveDot=root.querySelector("[data-live-dot]"),title=root.querySelector("[data-summary-title]"),message=root.querySelector("[data-summary-message]"),updated=root.querySelector("[data-last-updated]"),monitorState=root.querySelector("[data-monitoring-state]"),badge=root.querySelector("[data-monitor-badge]"),groups=root.querySelector("[data-status-groups]"),refresh=root.querySelector("[data-refresh-status]");
+  const incident=root.querySelector("[data-active-incident]"),incidentLabel=root.querySelector("[data-incident-label]"),incidentTitle=root.querySelector("[data-incident-title]"),incidentMessage=root.querySelector("[data-incident-message]"),incidentMeta=root.querySelector("[data-incident-meta]");
+  const renderFiltered=()=>{const active=root.querySelector("[data-service-filter] button.is-active")?.dataset.filter||"all",query=(root.querySelector("[data-service-search]")?.value||"").trim().toLowerCase();root.querySelectorAll("[data-service-row]").forEach(row=>{const mode=row.dataset.mode,state=row.dataset.state,text=row.textContent.toLowerCase();const passMode=active==="all"||active===mode||(active==="issues"&&["degraded","outage","unknown"].includes(state));row.hidden=!(passMode&&(!query||text.includes(query)))});root.querySelectorAll("[data-service-group]").forEach(group=>{group.hidden=!group.querySelector("[data-service-row]:not([hidden])")})};
+  root.querySelectorAll("[data-service-filter] button").forEach(btn=>btn.addEventListener("click",()=>{root.querySelectorAll("[data-service-filter] button").forEach(x=>x.classList.toggle("is-active",x===btn));renderFiltered()}));
+  root.querySelector("[data-service-search]")?.addEventListener("input",renderFiltered);
+
+  async function load(bust=false){
+    refresh.disabled=true;refresh.classList.add("is-loading");
+    try{
+      const issue=await getIssue(root,bust),data=extract(issue.body,START,END);if(!data?.groups)throw new Error("missing payload");
+      const services=data.groups.flatMap(g=>Array.isArray(g.services)?g.services:[]),checked=dt(data.generatedAt),stale=Boolean(checked&&Date.now()-checked.getTime()>STALE_MS),manualAffected=services.filter(s=>s.monitoring==="manual"&&["degraded","outage"].includes(norm(s.status))),recorded=norm(data.summary?.status),presentation=manualAffected.length?worst(manualAffected,"degraded"):(stale?"unknown":recorded);
+      currentServices=services;hero.className=`hero-health hero-health--${presentation}`;heroIcon.textContent=icon(presentation);liveDot.className=`live-dot live-dot--${presentation}`;
+      monitorState.textContent=stale?"Monitoring delayed":checked?"Monitoring active":"Initializing monitoring";badge.textContent=stale?"Delayed snapshot":"15-minute checks";badge.className=`monitor-badge${stale?" monitor-badge--warning":""}`;
+      if(!checked){title.textContent="Waiting for the first production check";message.textContent=data.summary?.message||"The automatic monitor is initializing."}
+      else if(stale){title.textContent="Monitoring data is delayed";message.textContent="The latest monitor cycle is older than expected. The service list below remains visible as last-known data."}
+      else if(presentation==="operational"){title.textContent="All monitored systems are operational";message.textContent=data.summary?.message||"All current production probes passed."}
+      else if(presentation==="degraded"){title.textContent="Some systems are experiencing issues";message.textContent=data.summary?.message||"One or more services are degraded."}
+      else if(presentation==="outage"){title.textContent="A Gapwise service is unavailable";message.textContent=data.summary?.message||"One or more services are unavailable."}
+      else{title.textContent="Current status is temporarily unavailable";message.textContent="The latest health state could not be established confidently."}
+      updated.textContent=checked?`${age(data.generatedAt)} · ${fmt(data.generatedAt)}`:"No completed check yet";
+      const automatic=services.filter(s=>s.monitoring==="automatic"),manual=services.filter(s=>s.monitoring==="manual"),healthy=services.filter(s=>norm(s.status)==="operational"),issues=services.filter(s=>norm(s.status)!=="operational");
+      root.querySelector("[data-stat-services]").textContent=String(services.length);root.querySelector("[data-stat-automatic]").textContent=String(automatic.length);root.querySelector("[data-stat-healthy]").textContent=`${healthy.length}/${services.length}`;root.querySelector("[data-filter-all]").textContent=String(services.length);root.querySelector("[data-filter-automatic]").textContent=String(automatic.length);root.querySelector("[data-filter-manual]").textContent=String(manual.length);root.querySelector("[data-filter-issues]").textContent=String(issues.length);
+      root.querySelector("[data-coverage-value]").textContent=services.length?`${Math.round(automatic.length/services.length*100)}%`:"—";root.querySelector("[data-freshness-value]").textContent=checked?(stale?"Stale":age(data.generatedAt).replace("Updated ","")):"Pending";root.querySelector("[data-snapshot-detail]").textContent=checked?`${automatic.length} automatic services were last probed at ${fmt(data.generatedAt)}. ${stale?"This is outside the expected one-hour freshness window.":"This snapshot is within the expected freshness window."}`:"Automatic monitoring has not completed its first cycle yet.";
+      const affected=services.filter(s=>["degraded","outage"].includes(norm(s.status))&&(s.monitoring==="manual"||!stale));incident.hidden=affected.length===0;if(affected.length){const w=worst(affected,"degraded");incident.className=`active-incident active-incident--${w}`;incidentLabel.textContent=w==="outage"?"Active outage":"Active degradation";incidentTitle.textContent=affected.length===1?`${affected[0].name} is reporting issues`:`${affected.length} services are reporting issues`;incidentMessage.textContent="The latest trusted snapshot contains a non-operational state. The monitor will record the transition when service health changes.";incidentMeta.textContent=`Affected: ${affected.map(s=>s.name).join(", ")}`}
+      groups.innerHTML=data.groups.map(group=>{const ss=Array.isArray(group.services)?group.services:[],roll=worst(ss);return`<section class="service-group" data-service-group><div class="service-group__head"><div class="service-group__title"><span class="status-icon status-icon--${roll}">${icon(roll)}</span><div><h3>${esc(group.name)}</h3><span>${ss.length} service${ss.length===1?"":"s"}</span></div></div><div class="service-group__state"><span class="state-dot state-dot--${roll}"></span>${label(roll)}</div></div><div class="service-list">${ss.map(s=>{const state=norm(s.status),domain=host(s.url),mode=s.monitoring==="automatic"?"automatic":"manual",modeLabel=mode==="automatic"?"Automatic probe":"Operator-maintained",when=s.checkedAt?fmt(s.checkedAt):"No confirmation time",detail=s.detail||"No additional diagnostic detail";return`<article class="service-row" data-service-row data-mode="${mode}" data-state="${state}"><div class="service-row__identity"><span class="status-icon status-icon--${state}">${icon(state)}</span><div><strong>${esc(s.name)}</strong><span>${esc(domain||modeLabel)}</span></div></div><div class="service-row__monitor"><span class="monitor-type">${esc(modeLabel)}</span><span>${esc(when)}</span></div><div class="service-row__diagnostic"><span>${esc(detail)}</span></div><div class="service-row__state"><span class="state-dot state-dot--${state}"></span>${label(state)}</div></article>`}).join("")}</div></section>`}).join("");renderFiltered();
+      const comments=await getHistory(root),events=comments.map(c=>{try{return extract(c.body||"",EVENT_START,EVENT_END)}catch{return null}}).filter(Boolean),incidentEvents=events.filter(e=>["degraded","outage"].includes(e.to));root.querySelector("[data-stat-incidents]").textContent=String(incidentEvents.length);const hs=root.querySelector("[data-history-summary]");if(!events.length)hs.textContent="No degraded or outage transitions have been recorded since status history began.";else{const latest=events.map(e=>({...e,date:dt(e.at)})).filter(e=>e.date).sort((a,b)=>b.date-a.date)[0];hs.textContent=`${incidentEvents.length} incident transition${incidentEvents.length===1?"":"s"} recorded. Latest change: ${latest?.serviceName||"service"} · ${latest?fmt(latest.at):"unknown time"}.`}
+    }catch(error){hero.className="hero-health hero-health--unknown";heroIcon.textContent="?";title.textContent="Live status data is temporarily unavailable";message.textContent="The status record could not be loaded. This does not by itself mean Gapwise is down.";updated.textContent="Status source unavailable · retry shortly";monitorState.textContent="Monitoring unavailable";badge.textContent="Status unavailable";badge.className="monitor-badge monitor-badge--warning";groups.innerHTML='<div class="loading-row loading-row--error">Could not load the current service record. Use Refresh to retry.</div>';console.error("Gapwise status:",error)}finally{refresh.disabled=false;refresh.classList.remove("is-loading")}}
+  refresh.addEventListener("click",()=>load(true));load(false);setInterval(()=>load(true),5*60*1000);
+});
 </script>

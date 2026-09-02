@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import "../styles/dark-overrides.css";
+import "../styles/gapwise-core-theme.css";
 
 interface Props {
   title: string;
@@ -23,7 +24,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:url" content={canonical} />
     <meta property="og:type" content="website" />
     <meta name="color-scheme" content="dark" />
-    <meta name="theme-color" content="#090a0c" />
+    <meta name="theme-color" content="#07101a" />
     <title>{title}</title>
   </head>
   <body>

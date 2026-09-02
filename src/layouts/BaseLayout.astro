@@ -16,6 +16,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
@@ -27,7 +28,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <header class="site-header">
       <div class="site-header__inner">
         <a class="brand" href="/" aria-label="Gapwise Status home">
-          <span class="brand-mark" aria-hidden="true">G</span>
+          <img src="/logo-mark-green.svg" width="28" height="28" alt="" aria-hidden="true" style="display:block;width:1.75rem;height:1.75rem" />
           <span>Gapwise</span>
           <span class="brand-divider" aria-hidden="true"></span>
           <strong>Status</strong>

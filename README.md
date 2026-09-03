@@ -25,7 +25,7 @@
 
 Gapwise Status is the independent operational-health surface for **Gapwise**, a multi-surface campus-intelligence ecosystem created and engineered by **Andrew Muratov**.
 
-Gapwise spans a student web/PWA product, native mobile client, deterministic public campus API and SDKs, open data/provenance portal, permissioned OAuth/MCP AI integration, developer documentation, and this separately deployed monitoring and incident-communication service.
+Gapwise spans a student web/PWA product, native mobile client, deterministic public campus API and published JavaScript/TypeScript and Python SDKs, open data/provenance portal, permissioned OAuth/MCP AI integration, developer documentation, and this separately deployed monitoring and incident-communication service.
 
 Andrew's work across the ecosystem spans **full-stack software engineering, cybersecurity and privacy engineering, platform architecture, API and SDK design, data engineering, developer infrastructure, mobile engineering, operations, and permissioned AI integration**.
 
@@ -61,18 +61,31 @@ Public routes include `/` for current state, `/history/` for recorded transition
 
 ---
 
+## Current developer-platform state
+
+Gapwise's public developer surface is versioned at `https://api.gapwise.ca/v1` with an OpenAPI 3.1 contract at `https://api.gapwise.ca/openapi.json`. Both first-party 0.1.0 SDKs are now public:
+
+```bash
+npm install @gapwise/sdk@0.1.0
+python -m pip install gapwise==0.1.0
+```
+
+SDK registry availability is a developer-platform release fact, not a status-page substitute: operational availability still belongs to live monitoring of the API and related production services.
+
+---
+
 ## Gapwise ecosystem
 
 | Repository | Role | Primary surface |
 | --- | --- | --- |
-| **[`gapwise`](https://github.com/andrewmuratov/gapwise)** | Core web/PWA, deterministic student/campus engine, public API, OpenAPI, and SDK source | [gapwise.ca](https://gapwise.ca) / [api.gapwise.ca](https://api.gapwise.ca/v1) |
+| **[`gapwise`](https://github.com/andrewmuratov/gapwise)** | Core web/PWA, deterministic student/campus engine, public API, OpenAPI, and published SDK source | [gapwise.ca](https://gapwise.ca) / [api.gapwise.ca](https://api.gapwise.ca/v1) |
 | **[`gapwise-mobile`](https://github.com/andrewmuratov/gapwise-mobile)** | Native iOS and Android client | Native mobile app |
 | **[`gapwise-ai`](https://github.com/andrewmuratov/gapwise-ai)** | OAuth/MCP layer for explicitly delegated student context and bounded actions | [ai.gapwise.ca](https://ai.gapwise.ca) |
 | **[`gapwise-data`](https://github.com/andrewmuratov/gapwise-data)** | Open campus-data, provenance, schema, validation, and reuse portal | [data.gapwise.ca](https://data.gapwise.ca) |
 | **[`gapwise-docs`](https://github.com/andrewmuratov/gapwise-docs)** | Canonical developer documentation | [docs.gapwise.ca](https://docs.gapwise.ca) |
 | **[`gapwise-status`](https://github.com/andrewmuratov/gapwise-status)** | Independent service-health monitoring and incident communication | [status.gapwise.ca](https://status.gapwise.ca) |
 
-`gapwise-status` owns operational communication, not product semantics. The main `gapwise` repository remains authoritative for deterministic timetable, routing, gap, campus, API, and student-state behavior.
+`gapwise-status` owns operational communication, not product semantics. The main `gapwise` repository remains authoritative for deterministic timetable, routing, gap, campus, API, SDK, and student-state behavior.
 
 ---
 

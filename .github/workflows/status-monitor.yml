@@ -18,13 +18,21 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 6
     steps:
-      - name: Fetch monitor script
+      - name: Fetch monitor scripts
         run: |
           curl --fail --location --retry 4 --retry-all-errors \
             "https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${GITHUB_SHA}/scripts/update-status.mjs" \
             --output /tmp/update-status.mjs
+          curl --fail --location --retry 4 --retry-all-errors \
+            "https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/${GITHUB_SHA}/scripts/enrich-gapwise-health.mjs" \
+            --output /tmp/enrich-gapwise-health.mjs
       - name: Probe production services and publish status
         run: node /tmp/update-status.mjs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STATUS_ISSUE_NUMBER: "1"
+      - name: Attach Gapwise health and release metadata
+        run: node /tmp/enrich-gapwise-health.mjs
         env:
           GH_TOKEN: ${{ github.token }}
           STATUS_ISSUE_NUMBER: "1"

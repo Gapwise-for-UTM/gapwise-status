@@ -63,14 +63,15 @@ Public routes include `/` for current state, `/history/` for recorded transition
 
 ## Current developer-platform state
 
-Gapwise's public developer surface is versioned at `https://api.gapwise.ca/v1` with an OpenAPI 3.1 contract at `https://api.gapwise.ca/openapi.json`. Both first-party 0.1.0 SDKs are now public:
+Gapwise's public developer surface is versioned at `https://api.gapwise.ca/v1` with an OpenAPI 3.1 contract at `https://api.gapwise.ca/openapi.json`. The current first-party SDK releases are public through three registries:
 
 ```bash
-npm install @gapwise/sdk@0.1.0
+npm install @gapwise/sdk@0.1.1
+# JSR: @gapwise/sdk@0.1.1
 python -m pip install gapwise==0.1.0
 ```
 
-SDK registry availability is a developer-platform release fact, not a status-page substitute: operational availability still belongs to live monitoring of the API and related production services.
+The JavaScript/TypeScript SDK is published on npm and JSR; the Python SDK is published on PyPI. SDK registry availability is a developer-platform release fact, not a status-page substitute: operational availability still belongs to live monitoring of the API and related production services.
 
 ---
 

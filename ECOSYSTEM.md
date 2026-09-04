@@ -15,7 +15,7 @@
 
 ## Current developer-platform release facts
 
-- TypeScript `@gapwise/sdk@0.1.0` is published on both npm and JSR with provenance through trusted GitHub Actions publishing.
+- TypeScript `@gapwise/sdk@0.1.1` is published on both npm and JSR with provenance through trusted GitHub Actions publishing.
 - Node, Bun, and Deno are runtime targets for the same TypeScript implementation, not separately monitored SDK products.
 - Python `gapwise==0.1.0` is published on PyPI through Trusted Publishing.
 - TypeScript and Python are equal first-party SDK implementations of the same public API v1 semantics.

@@ -1,5 +1,5 @@
-const owner = "andrewmuratov";
-const repo = "gapwise-status";
+const [owner, repo] = String(process.env.GITHUB_REPOSITORY || "Gapwise-for-UTM/gapwise-status").split("/");
+if (!owner || !repo) throw new Error("GITHUB_REPOSITORY must be in owner/repo form.");
 const issueNumber = Number(process.env.STATUS_ISSUE_NUMBER || "1");
 const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
 const serviceId = String(process.env.STATUS_SERVICE_ID || "").trim();
@@ -95,14 +95,14 @@ function summaryFor(data) {
   }
   return {
     status: "operational",
-    message: "All automatically checked Gapwise services passed the latest hourly probes.",
+    message: "All automatically checked Gapwise services passed the latest scheduled probes.",
   };
 }
 
 function statusIssueBody(data) {
   return `This issue is a machine-managed public data source for \`status.gapwise.ca\`.
 
-The hourly status workflow updates automatic checks, while the operator workflow updates operator-maintained services. Status-history transitions are recorded as comments. Do not use this issue for vulnerability reports or support requests.
+The scheduled status workflow runs every 15 minutes and updates automatic checks, while the operator workflow updates operator-maintained services. Status-history transitions are recorded as comments. Do not use this issue for vulnerability reports or support requests.
 
 ${STATUS_MARKER_START}
 ${JSON.stringify(data, null, 2)}

@@ -9,7 +9,7 @@
 **The public monitoring and incident-communication surface for Gapwise applications, APIs, AI services, data and documentation surfaces, and selected operator-maintained systems.**
 
 [![Live Status](https://img.shields.io/badge/Live_Status-status.gapwise.ca-36C692?style=for-the-badge&logo=vercel&logoColor=white)](https://status.gapwise.ca)
-[![Monitoring](https://img.shields.io/badge/Monitoring-Hourly-36C692?style=for-the-badge)](https://status.gapwise.ca)
+[![Monitoring](https://img.shields.io/badge/Monitoring-Every_15_Min-36C692?style=for-the-badge)](https://status.gapwise.ca)
 
 <sub>Astro · GitHub Actions · Vercel</sub>
 
@@ -47,7 +47,7 @@ Automated checks cover safely observable public production surfaces such as the 
 
 Key behavior:
 
-- automated checks are serialized to avoid competing publishers;
+- automatic public-surface checks run every 15 minutes and are serialized to avoid competing publishers;
 - stale monitoring data becomes visibly **unknown / monitoring delayed** rather than silently remaining green;
 - operator-reported incidents remain visible when automation is stale;
 - service-state transitions are retained for the public history view;
@@ -61,15 +61,16 @@ Public routes include `/` for current state, `/history/` for recorded transition
 
 ## Current developer-platform state
 
-Gapwise's public developer surface is versioned at `https://api.gapwise.ca/v1` with an OpenAPI 3.1 contract at `https://api.gapwise.ca/openapi.json`. The current first-party SDK releases are public through three registries:
+Gapwise's public developer surface is versioned at `https://api.gapwise.ca/v1` with an OpenAPI 3.1 contract at `https://api.gapwise.ca/openapi.json`. The current first-party SDK releases are public through canonical npm, JSR, and PyPI channels, with a source-adjacent GitHub Packages mirror:
 
 ```bash
 npm install @gapwise/sdk@0.1.1
 # JSR: @gapwise/sdk@0.1.1
+# GitHub Packages mirror: @gapwise-for-utm/sdk@0.1.1
 python -m pip install gapwise==0.1.0
 ```
 
-The JavaScript/TypeScript SDK is published on npm and JSR; the Python SDK is published on PyPI. SDK registry availability is a developer-platform release fact, not a status-page substitute: operational availability still belongs to live monitoring of the API and related production services.
+The JavaScript/TypeScript SDK is canonically published as `@gapwise/sdk` on npm and JSR and mirrored on GitHub Packages as `@gapwise-for-utm/sdk`; the Python SDK is published on PyPI. The GitHub Packages scope differs because GitHub requires package scopes to match the owning organization. SDK registry availability is a developer-platform release fact, not a status-page substitute: operational availability still belongs to live monitoring of the API and related production services.
 
 ---
 

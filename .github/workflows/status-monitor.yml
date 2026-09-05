@@ -3,6 +3,12 @@ name: Status monitor
 on:
   schedule:
     - cron: "7,22,37,52 * * * *"
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/status-monitor.yml
+      - scripts/update-status.mjs
+      - scripts/enrich-gapwise-health.mjs
   workflow_dispatch:
 
 concurrency:

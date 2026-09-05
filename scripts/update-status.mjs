@@ -1,5 +1,5 @@
-const owner = "andrewmuratov";
-const repo = "gapwise-status";
+const [owner, repo] = String(process.env.GITHUB_REPOSITORY || "Gapwise-for-UTM/gapwise-status").split("/");
+if (!owner || !repo) throw new Error("GITHUB_REPOSITORY must be in owner/repo form.");
 const issueNumber = Number(process.env.STATUS_ISSUE_NUMBER || "1");
 const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
 
@@ -137,14 +137,14 @@ function summaryFor(data) {
   }
   return {
     status: "operational",
-    message: "All automatically checked Gapwise services passed the latest hourly probes.",
+    message: "All automatically checked Gapwise services passed the latest scheduled probes.",
   };
 }
 
 function statusIssueBody(data) {
   return `This issue is a machine-managed public data source for \`status.gapwise.ca\`.
 
-The hourly status workflow updates automatic checks, while the operator workflow updates operator-maintained services. Status-history transitions are recorded as comments. Do not use this issue for vulnerability reports or support requests.
+The scheduled status workflow runs every 15 minutes and updates automatic checks, while the operator workflow updates operator-maintained services. Status-history transitions are recorded as comments. Do not use this issue for vulnerability reports or support requests.
 
 ${STATUS_MARKER_START}
 ${JSON.stringify(data, null, 2)}
@@ -152,9 +152,9 @@ ${STATUS_MARKER_END}`;
 }
 
 function transitionMessage(service, from, to) {
-  if (to === "operational") return `${service.name} passed all three probes in the latest hourly check and is marked operational again.`;
+  if (to === "operational") return `${service.name} passed all three probes in the latest scheduled check and is marked operational again.`;
   if (to === "degraded") return `${service.name} returned inconsistent probe results and is marked degraded.`;
-  if (to === "outage") return `${service.name} failed all three probes in the latest hourly check and is marked unavailable.`;
+  if (to === "outage") return `${service.name} failed all three probes in the latest scheduled check and is marked unavailable.`;
   return `${service.name} changed from ${from} to ${to}.`;
 }
 

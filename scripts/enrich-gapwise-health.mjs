@@ -1,5 +1,5 @@
-const owner = "andrewmuratov";
-const repo = "gapwise-status";
+const [owner, repo] = String(process.env.GITHUB_REPOSITORY || "Gapwise-for-UTM/gapwise-status").split("/");
+if (!owner || !repo) throw new Error("GITHUB_REPOSITORY must be in owner/repo form.");
 const issueNumber = Number(process.env.STATUS_ISSUE_NUMBER || "1");
 const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
 if (!token) throw new Error("GH_TOKEN or GITHUB_TOKEN is required.");

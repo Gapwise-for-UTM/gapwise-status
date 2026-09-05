@@ -14,8 +14,25 @@ const automaticChecks = new Map([
   ["web", { url: "https://gapwise.ca/", expected: (status) => status >= 200 && status < 400 }],
   ["public-api", { url: "https://api.gapwise.ca/v1", expected: (status) => status >= 200 && status < 300 }],
   ["ai-health", { url: "https://ai.gapwise.ca/api/health", expected: (status) => status >= 200 && status < 300 }],
+  ["data", { url: "https://data.gapwise.ca/", expected: (status) => status >= 200 && status < 400 }],
   ["docs", { url: "https://docs.gapwise.ca/", expected: (status) => status >= 200 && status < 400 }],
 ]);
+
+const canonicalAutomaticServices = [
+  {
+    groupId: "data",
+    groupName: "Open data",
+    service: {
+      id: "data",
+      name: "Gapwise Data",
+      url: "https://data.gapwise.ca/",
+      status: "unknown",
+      monitoring: "automatic",
+      checkedAt: null,
+      detail: "Awaiting first automatic probe",
+    },
+  },
+];
 
 const githubHeaders = {
   Accept: "application/vnd.github+json",
@@ -47,6 +64,28 @@ function flattenServices(data) {
   return new Map((data.groups || []).flatMap((group) =>
     (group.services || []).map((service) => [service.id, service]),
   ));
+}
+
+function ensureCanonicalServices(data) {
+  if (!Array.isArray(data.groups)) data.groups = [];
+  for (const definition of canonicalAutomaticServices) {
+    let group = data.groups.find((candidate) => candidate.id === definition.groupId);
+    if (!group) {
+      group = { id: definition.groupId, name: definition.groupName, services: [] };
+      data.groups.push(group);
+    }
+    if (!Array.isArray(group.services)) group.services = [];
+    let service = group.services.find((candidate) => candidate.id === definition.service.id);
+    if (!service) {
+      group.services.push(structuredClone(definition.service));
+      continue;
+    }
+    service.name = definition.service.name;
+    service.url = definition.service.url;
+    service.monitoring = "automatic";
+    if (!new Set(["operational", "degraded", "outage", "unknown"]).has(service.status)) service.status = "unknown";
+    if (!("checkedAt" in service)) service.checkedAt = null;
+  }
 }
 
 async function oneProbe(url, expected) {
@@ -184,6 +223,7 @@ const now = new Date().toISOString();
 const next = structuredClone(previous);
 next.version = 1;
 next.generatedAt = now;
+ensureCanonicalServices(next);
 
 for (const group of next.groups || []) {
   for (const service of group.services || []) {

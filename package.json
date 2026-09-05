@@ -3,6 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "homepage": "https://status.gapwise.ca",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Gapwise-for-UTM/gapwise-status.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Gapwise-for-UTM/gapwise-status/issues"
+  },
   "scripts": {
     "dev": "astro dev",
     "build": "npm run verify:status-scripts && astro build",

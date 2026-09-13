@@ -25,7 +25,7 @@
 
 Gapwise Status is the independent operational-health surface for **Gapwise**, a multi-surface campus-intelligence ecosystem created and engineered by **Andrew Muratov**. The canonical repositories are owned by the **Gapwise for UTM** GitHub organization (`Gapwise-for-UTM`); Andrew remains the creator and primary maintainer.
 
-Gapwise spans a student web/PWA product, native mobile client, deterministic public campus API and published JavaScript/TypeScript and Python SDKs, open data/provenance portal, permissioned OAuth/MCP AI integration, developer documentation, and this separately deployed monitoring and incident-communication service.
+Gapwise spans a student web/PWA product, native Android client, deterministic public campus API and published JavaScript/TypeScript and Python SDKs, open data/provenance portal, permissioned OAuth/MCP AI integration, developer documentation, and this separately deployed monitoring and incident-communication service.
 
 This repository is deliberately deployed independently from the main app and developer documentation so a failure in those surfaces does not automatically remove the place used to communicate service health.
 
@@ -79,13 +79,13 @@ The JavaScript/TypeScript SDK is canonically published as `@gapwise/sdk` on npm 
 | Repository | Role | Primary surface |
 | --- | --- | --- |
 | **[`gapwise`](https://github.com/Gapwise-for-UTM/gapwise)** | Core web/PWA, deterministic student/campus engine, public API, OpenAPI, and published SDK source | [gapwise.ca](https://gapwise.ca) / [api.gapwise.ca](https://api.gapwise.ca/v1) |
-| **[`gapwise-mobile`](https://github.com/Gapwise-for-UTM/gapwise-mobile)** | Native iOS and Android client | Native mobile app |
-| **[`gapwise-ai`](https://github.com/Gapwise-for-UTM/gapwise-ai)** | OAuth/MCP layer for explicitly delegated student context and bounded actions | [ai.gapwise.ca](https://ai.gapwise.ca) |
-| **[`gapwise-data`](https://github.com/Gapwise-for-UTM/gapwise-data)** | Open campus-data, provenance, schema, validation, and reuse portal | [data.gapwise.ca](https://data.gapwise.ca) |
-| **[`gapwise-docs`](https://github.com/Gapwise-for-UTM/gapwise-docs)** | Canonical developer documentation | [docs.gapwise.ca](https://docs.gapwise.ca) |
-| **[`gapwise-status`](https://github.com/Gapwise-for-UTM/gapwise-status)** | Independent service-health monitoring and incident communication | [status.gapwise.ca](https://status.gapwise.ca) |
+| **[`android`](https://github.com/Gapwise-for-UTM/android)** | Native Kotlin + Jetpack Compose Android client | Android app |
+| **[`ai`](https://github.com/Gapwise-for-UTM/ai)** | OAuth/MCP layer for explicitly delegated student context and bounded actions | [ai.gapwise.ca](https://ai.gapwise.ca) |
+| **[`data`](https://github.com/Gapwise-for-UTM/data)** | Open campus-data, provenance, schema, validation, and reuse portal | [data.gapwise.ca](https://data.gapwise.ca) |
+| **[`docs`](https://github.com/Gapwise-for-UTM/docs)** | Canonical developer documentation | [docs.gapwise.ca](https://docs.gapwise.ca) |
+| **[`status`](https://github.com/Gapwise-for-UTM/status)** | Independent service-health monitoring and incident communication | [status.gapwise.ca](https://status.gapwise.ca) |
 
-`gapwise-status` owns operational communication, not product semantics. The main `gapwise` repository remains authoritative for deterministic timetable, routing, gap, campus, API, SDK, and student-state behavior.
+`status` owns operational communication, not product semantics. The main `gapwise` repository remains authoritative for deterministic timetable, routing, gap, campus, API, SDK, and student-state behavior.
 
 ---
 
@@ -94,15 +94,15 @@ The JavaScript/TypeScript SDK is canonically published as `@gapwise/sdk` on npm 
 Requires Node.js 22 or newer.
 
 ```bash
-git clone https://github.com/Gapwise-for-UTM/gapwise-status.git
-cd gapwise-status
+git clone https://github.com/Gapwise-for-UTM/status.git
+cd status
 npm install
 npm run check
 npm run build
 npm run dev
 ```
 
-`main` is the production status branch and deploys through the dedicated `gapwise-status` Vercel project. `status.gapwise.ca` is independent from the `gapwise` and `gapwise-docs` deployments.
+`main` is the production status branch and deploys through the dedicated Gapwise Status Vercel project. `status.gapwise.ca` is independent from the `gapwise` and `docs` deployments.
 
 ---
 

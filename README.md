@@ -1,12 +1,12 @@
 <div align="center">
 
-<img src="public/logo-mark-green.svg" width="116" alt="Gapwise deer mark" />
+<img src="public/logo-mark-green.svg" width="116" alt="Gapwise Status deer mark" />
 
 # Gapwise Status
 
-### Independent service health for the full Gapwise ecosystem.
+### Independent service health for the Gapwise ecosystem.
 
-**The public monitoring and incident-communication surface for Gapwise applications, APIs, AI services, data and documentation surfaces, and selected operator-maintained systems.**
+**The public monitoring and incident-communication surface for Gapwise applications, APIs, AI, data, documentation, and selected operator-maintained systems.**
 
 [![Live Status](https://img.shields.io/badge/Live_Status-status.gapwise.ca-36C692?style=for-the-badge&logo=vercel&logoColor=white)](https://status.gapwise.ca)
 [![Monitoring](https://img.shields.io/badge/Monitoring-Every_15_Min-36C692?style=for-the-badge)](https://status.gapwise.ca)
@@ -15,7 +15,7 @@
 
 <br />
 
-**[Status](https://status.gapwise.ca)** · **[History](https://status.gapwise.ca/history/)** · **[Gapwise](https://gapwise.ca)** · **[Data](https://data.gapwise.ca)** · **[AI](https://ai.gapwise.ca)** · **[Docs](https://docs.gapwise.ca)** · **[GitHub](https://github.com/Gapwise-for-UTM)**
+**[Gapwise](https://gapwise.ca)** · **[Android](https://github.com/Gapwise-for-UTM/android)** · **[iOS](https://github.com/Gapwise-for-UTM/ios)** · **[AI](https://ai.gapwise.ca)** · **[Data](https://data.gapwise.ca)** · **[Docs](https://docs.gapwise.ca)** · **[Status](https://status.gapwise.ca)** · **[History](https://status.gapwise.ca/history/)**
 
 </div>
 
@@ -23,11 +23,11 @@
 
 ## What Gapwise Status is
 
-Gapwise Status is the independent operational-health surface for **Gapwise**, a multi-surface campus-intelligence ecosystem created and engineered by **Andrew Muratov**. The canonical repositories are owned by the **Gapwise for UTM** GitHub organization (`Gapwise-for-UTM`); Andrew remains the creator and primary maintainer.
+Gapwise Status is the independent operational-health surface for **Gapwise**, a privacy-first timetable and campus-intelligence platform for University of Toronto students created and engineered by **Andrew Muratov**.
 
-Gapwise spans a student web/PWA product, native Android client, deterministic public campus API and published JavaScript/TypeScript and Python SDKs, open data/provenance portal, permissioned OAuth/MCP AI integration, developer documentation, and this separately deployed monitoring and incident-communication service.
+The seven first-party product repositories cover the web/PWA and developer platform, native Android and iOS clients, permissioned AI/MCP, canonical UTM campus data, developer documentation, and this separately deployed status service.
 
-This repository is deliberately deployed independently from the main app and developer documentation so a failure in those surfaces does not automatically remove the place used to communicate service health.
+Status is deliberately deployed independently from the main app and developer docs so a failure in those surfaces does not automatically remove the place used to communicate service health.
 
 Canonical production URL:
 
@@ -43,7 +43,7 @@ The site communicates the latest known state of Gapwise-owned production surface
 
 Gapwise separates automated probes from services that require operator confirmation.
 
-Automated checks cover safely observable public production surfaces such as the main application, public API, AI service, data portal, and developer documentation. Operator-maintained state is used when real health requires private-session or provider-side evidence that cannot be verified safely through a public HTTP probe alone.
+Automated checks cover safely observable public production surfaces such as the main application, public API, AI service, Data portal, and developer documentation. Operator-maintained state is used when real health requires private-session, app-store, device, or provider-side evidence that cannot be verified safely through a public HTTP probe alone.
 
 Key behavior:
 
@@ -51,17 +51,21 @@ Key behavior:
 - stale monitoring data becomes visibly **unknown / monitoring delayed** rather than silently remaining green;
 - operator-reported incidents remain visible when automation is stale;
 - service-state transitions are retained for the public history view;
-- current state and history are cached at the edge with GitHub-backed fallbacks;
-- a failure to load status data is not itself presented as proof that Gapwise is down;
+- current state and history use GitHub-backed state with safe fallbacks;
+- a failure to load status data is not itself presented as proof that the entire Gapwise ecosystem is down;
 - external University of Toronto systems and other upstream dependencies remain outside Gapwise's control.
 
 Public routes include `/` for current state, `/history/` for recorded transitions/incidents, `/_data/current`, and `/_data/history`.
+
+Native Android/iOS repository existence, build state, or app-store release state is **release metadata**, not an HTTP uptime signal. Mobile distribution should only appear as operational status when a meaningful and safely verifiable health contract exists.
 
 ---
 
 ## Current developer-platform state
 
-Gapwise's public developer surface is versioned at `https://api.gapwise.ca/v1` with an OpenAPI 3.1 contract at `https://api.gapwise.ca/openapi.json`. The current first-party SDK releases are public through canonical npm, JSR, and PyPI channels, with a source-adjacent GitHub Packages mirror:
+Gapwise's public developer surface is versioned at `https://api.gapwise.ca/v1` with an OpenAPI 3.1 contract at `https://api.gapwise.ca/openapi.json`.
+
+Current first-party SDK releases:
 
 ```bash
 npm install @gapwise/sdk@0.1.1
@@ -70,7 +74,7 @@ npm install @gapwise/sdk@0.1.1
 python -m pip install gapwise==0.1.0
 ```
 
-The JavaScript/TypeScript SDK is canonically published as `@gapwise/sdk` on npm and JSR and mirrored on GitHub Packages as `@gapwise-for-utm/sdk`; the Python SDK is published on PyPI. The GitHub Packages scope differs because GitHub requires package scopes to match the owning organization. SDK registry availability is a developer-platform release fact, not a status-page substitute: operational availability still belongs to live monitoring of the API and related production services.
+The JavaScript/TypeScript SDK is canonically published as `@gapwise/sdk` on npm and JSR and mirrored on GitHub Packages as `@gapwise-for-utm/sdk`; the Python SDK is published on PyPI. Registry availability is a developer-platform release fact, not a substitute for live API/service monitoring.
 
 ---
 
@@ -78,14 +82,15 @@ The JavaScript/TypeScript SDK is canonically published as `@gapwise/sdk` on npm 
 
 | Repository | Role | Primary surface |
 | --- | --- | --- |
-| **[`gapwise`](https://github.com/Gapwise-for-UTM/gapwise)** | Core web/PWA, deterministic student/campus engine, public API, OpenAPI, and published SDK source | [gapwise.ca](https://gapwise.ca) / [api.gapwise.ca](https://api.gapwise.ca/v1) |
+| **[`gapwise`](https://github.com/Gapwise-for-UTM/gapwise)** | Core web/PWA, canonical timetable/gap/routing semantics, public API, OpenAPI, and SDK source | [gapwise.ca](https://gapwise.ca) / [api.gapwise.ca](https://api.gapwise.ca/v1) |
 | **[`android`](https://github.com/Gapwise-for-UTM/android)** | Native Kotlin + Jetpack Compose Android client | Android app |
+| **[`ios`](https://github.com/Gapwise-for-UTM/ios)** | Native Swift + SwiftUI iOS client | iOS app |
 | **[`ai`](https://github.com/Gapwise-for-UTM/ai)** | OAuth/MCP layer for explicitly delegated student context and bounded actions | [ai.gapwise.ca](https://ai.gapwise.ca) |
-| **[`data`](https://github.com/Gapwise-for-UTM/data)** | Open campus-data, provenance, schema, validation, and reuse portal | [data.gapwise.ca](https://data.gapwise.ca) |
-| **[`docs`](https://github.com/Gapwise-for-UTM/docs)** | Canonical developer documentation | [docs.gapwise.ca](https://docs.gapwise.ca) |
-| **[`status`](https://github.com/Gapwise-for-UTM/status)** | Independent service-health monitoring and incident communication | [status.gapwise.ca](https://status.gapwise.ca) |
+| **[`data`](https://github.com/Gapwise-for-UTM/data)** | Canonical public UTM campus data, provenance, schemas, validation, and distribution | [data.gapwise.ca](https://data.gapwise.ca) |
+| **[`docs`](https://github.com/Gapwise-for-UTM/docs)** | Canonical public developer documentation | [docs.gapwise.ca](https://docs.gapwise.ca) |
+| **[`status`](https://github.com/Gapwise-for-UTM/status)** | **Independent service-health monitoring and incident communication** | [status.gapwise.ca](https://status.gapwise.ca) |
 
-`status` owns operational communication, not product semantics. The main `gapwise` repository remains authoritative for deterministic timetable, routing, gap, campus, API, SDK, and student-state behavior.
+`status` owns operational communication, not product semantics. The main `gapwise` repository remains authoritative for deterministic timetable, routing, gap, public API, SDK, and student-state behavior; `data` owns public UTM campus facts.
 
 ---
 
@@ -106,6 +111,14 @@ npm run dev
 
 ---
 
-## Project relationship
+## Independent project
 
-Gapwise is an independent project created by Andrew Muratov. It is not an official University of Toronto service and is not affiliated with or endorsed by the University of Toronto.
+> **Gapwise is an independent student software project created by Andrew Muratov. It is not affiliated with, endorsed by, or an official service of the University of Toronto.**
+
+<div align="center">
+
+**Health should be observable without becoming another source of truth.**
+
+[View Gapwise Status →](https://status.gapwise.ca)
+
+</div>
